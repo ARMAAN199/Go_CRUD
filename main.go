@@ -37,7 +37,7 @@ func main() {
 	router.HandleFunc("/api/books", getBooks).Methods("GET")
 	// router.HandleFunc("/api/books/{id}", getBook).Methods("GET")
 	router.HandleFunc("/api/addbook", createBook).Methods("POST")
-	// router.HandleFunc("/api/updatebook/{id}", updateBook).Methods("PUT")
+	router.HandleFunc("/api/updatebook/{id}", updateBook).Methods("PUT")
 	router.HandleFunc("/api/deletebook/{id}", deleteBook).Methods("DELETE")
 
 	log.Println("%s", "Server started on port 8080")
@@ -87,35 +87,30 @@ func createBook(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(books)
 }
 
-// func main(){
-// 	fileserver := http.FileServer(http.Dir("./static"))
-// 	http.Handle("/", fileserver)
-// 	http.HandleFunc("/form", formhandle)
-// 	http.HandleFunc("/hello", hellohandle)
-
-// 	log.Println("Listening... on port `8080`")
-// 	err := http.ListenAndServe(":8080", nil)
-// 	if err != nil {
-// 		log.Fatal("ListenAndServe: ", err)
-// 	}
-// }
-
-// func hellohandle(w http.ResponseWriter, r *http.Request) {
-// 	if(r.URL.Path != "/hello"){
-// 		http.NotFound(w, r)
-// 		return
-// 	}
-// 	fmt.Fprintf(w, "Hello, %s!", r.URL.Path)
-// }
-
-// func formhandle(w http.ResponseWriter, r *http.Request) {
-// 	if(r.URL.Path != "/form"){
-// 		http.NotFound(w, r)
-// 		return
-// 	}
-// 	err := r.ParseForm()
-// 	if err != nil {
-// 		log.Println(err)
-// 	}
-// 	fmt.Fprintf(w, "Hello, %s!", r.FormValue("name"))
-// }
+func updateBook(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r)
+	r.ParseForm()
+	var ind int
+	for index, book := range books {
+		if book.ID == params["id"] {
+			ind = index
+		}
+	}
+	log.Println(ind)
+	log.Println(r.Form)
+	if len(r.Form["title"]) != 0 {
+		log.Println("here", books[ind].Title, r.Form["title"][0])
+		books[ind].Title = r.Form["title"][0]
+	}
+	if len(r.Form["year"]) != 0 {
+		books[ind].Year = r.Form["year"][0]
+	}
+	if len(r.Form["authorf"]) != 0 {
+		books[ind].Author.Firstname = r.Form["authorf"][0]
+	}
+	if len(r.Form["authorl"]) != 0 {
+		books[ind].Author.Lastname = r.Form["authorl"][0]
+	}
+	json.NewEncoder(w).Encode(books)
+}
