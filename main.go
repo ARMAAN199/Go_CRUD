@@ -33,9 +33,9 @@ func main() {
 	books = books.append(Book{ID: "2", Title: "Book Two", Year: "2019", Author: &Author{ID: "2",Firstname: "John2", Lastname: "Doe2" }})
 	router := mux.NewRouter()
 	router.HandleFunc("/api/books", getBooks).Methods("GET")
-	router.HandleFunc("/api/books/{id}", getBook).Methods("GET")
-	router.HandleFunc("/api/addbook", createBook).Methods("POST")
-	router.HandleFunc("/api/updatebook/{id}", updateBook).Methods("PUT")
+	// router.HandleFunc("/api/books/{id}", getBook).Methods("GET")
+	// router.HandleFunc("/api/addbook", createBook).Methods("POST")
+	// router.HandleFunc("/api/updatebook/{id}", updateBook).Methods("PUT")
 	router.HandleFunc("/api/deletebook/{id}", deleteBook).Methods("DELETE")
 
 	log.Println("%s", "Server started on port 8080")
@@ -47,7 +47,22 @@ func main() {
 
 func getBooks(w http.ResponseWriter, r *http.Request)
 {
-	
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(books)
+}
+
+func deleteBook(w http.ResponseWriter, r *http.Request)
+{
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r)
+	ind int;
+	for index, book := range books {
+		if book.ID == params[id]{
+			ind = index
+		}
+	}
+	books = append ( books[:ind], books[ind+1:]...)
+	json.NewEncoder(w).Encode(books)
 }
 
 
