@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
+	"strconv"
 
 	// "math/rand"
 
@@ -77,7 +79,12 @@ func createBook(w http.ResponseWriter, r *http.Request) {
 	// 	log.Fatal(err)
 	// }
 	r.ParseForm()
-	log.Println(r.Form["hello"])
+	if len(r.Form["title"]) == 0 || len(r.Form["year"]) == 0 || len(r.Form["authorf"]) == 0 || len(r.Form["authorl"]) == 0 {
+		fmt.Fprintf(w, "Please enter all req feilds")
+		return
+	}
+	books = append(books, Book{ID: strconv.Itoa(rand.Intn(10000)), Title: r.Form["title"][0], Year: r.Form["year"][0], Author: &Author{ID: "1", Firstname: r.Form["authorf"][0], Lastname: r.Form["authorl"][0]}})
+	json.NewEncoder(w).Encode(books)
 }
 
 // func main(){
